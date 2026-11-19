@@ -48,6 +48,8 @@ The reference mode keeps the original 0.50 mm default depth and does not represe
 
 `engine/PrintComparison.js` groups the **same projected samples** against two different stripe maps, at one angle for the table or across the preview range for the overlay. It traces each requested angle once and builds each stripe map once per comparison. This keeps the virtual sheet and model fixed even when sheet LPI defaults to A's print pitch. B changes only print effective LPI and offset; it does not redraw or export a different print. To print B, enter those settings in the print panel and regenerate.
 
+`engine/PitchOptimizer.js` sweeps a local grid around A (0.05 LPI and 0.5 px steps, at most 231 candidates). It reuses the projected samples for one distinct target angle per intended view. A candidate's score is the lowest intended-view share, then the mean intended-view share, then proximity in grid steps. Shares include unassigned weight in the denominator. The top five are theoretical suggestions within the tested grid and angles, not a calibration or a global optimum.
+
 ## Verification and calibration boundary
 
 - Test sign and symmetry of the refracted ray, clipped aperture weights, fractional pitch, signed print offset, and continuous transitions with synthetic stripes.

@@ -125,7 +125,11 @@ progress { width: min(200px, 80%); accent-color: var(--accent); }
 .print-comparison th, .print-comparison td { border-bottom: 1px solid var(--line); padding: .35rem .3rem; text-align: right; }
 .print-comparison th:first-child { text-align: left; }
 .print-comparison td { min-width: 4.2rem; }
-.comparison-curves { border-top: 1px solid var(--line); margin-top: .9rem; padding-top: .75rem; }
+.pitch-search, .comparison-curves { border-top: 1px solid var(--line); margin-top: .9rem; padding-top: .75rem; }
+.pitch-results { padding-left: 1.4rem; font-size: .85rem; }
+.pitch-results li { padding: .45rem 0; border-bottom: 1px solid var(--line); }
+.pitch-results li > div { margin-bottom: .3rem; }
+.pitch-results li p { margin: .2rem 0 0; }
 .export-actions { margin-top: .8rem; }
 footer { color: var(--muted); font-size: .78rem; margin-top: 1rem; }
 

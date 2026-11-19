@@ -23,6 +23,8 @@ To experiment before printing, open **Compare print settings A/B** under the res
 
 Open **Compare across angles** to overlay A and B from −40° to +40° for a selected view or the unassigned weight. This shows whether a change helps around the target angle as well as at the target itself.
 
+Within that panel, open **Search print settings**, choose a target angle for each view, and run the bounded search. It ranks up to five suggestions by the weakest intended view first. **Use in B** lets you inspect a suggestion without applying it to the actual print.
+
 Original files stay untouched. Thumbnails show the full sources. Raster preparation center-crops each image to A4's aspect ratio, then resamples to the common width and height without stretching it.
 
 ## Lens equations

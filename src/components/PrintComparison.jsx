@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { comparePrintSettings } from '../engine/PrintComparison.js'
 import { readSettings } from './LensSettings.jsx'
+import PitchSearch from './PitchSearch.jsx'
 import PrintComparisonChart from './PrintComparisonChart.jsx'
 
 const percent = (value) => `${(value * 100).toFixed(1)}%`
@@ -62,6 +63,11 @@ export default function PrintComparison({ rasterWidth, settings, viewCount, angl
       <p className="muted">Use the angle slider to compare the intended views. These are model weights, not measured ghosting.</p>
       <PrintComparisonChart rasterWidth={rasterWidth} settings={settings} viewCount={viewCount}
         angleDeg={angleDeg} project={project} candidate={comparison ? validation.settings : null} />
+      <PitchSearch rasterWidth={rasterWidth} settings={settings} viewCount={viewCount} project={project}
+        onSelect={(candidate) => {
+          setEffectiveLpi(String(candidate.effectiveLpi))
+          setOffset(String(candidate.offsetPx))
+        }} />
     </details>
   )
 }
