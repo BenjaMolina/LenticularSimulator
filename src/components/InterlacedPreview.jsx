@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import OpticalPreview from './OpticalPreview.jsx'
+import PrintPngDownload from './PrintPngDownload.jsx'
 
 const DETAIL_WIDTH = 144
 const DETAIL_HEIGHT = 80
@@ -62,6 +64,7 @@ function PreviewCanvas({ job }) {
         <div className="view-toggle" role="group" aria-label="Raster display">
           <button type="button" aria-pressed={mode === 'overview'} onClick={() => setMode('overview')}>Overview</button>
           <button type="button" aria-pressed={mode === 'detail'} onClick={() => setMode('detail')}>Stripe detail</button>
+          <button type="button" aria-pressed={mode === 'angle'} onClick={() => setMode('angle')}>Angular preview</button>
         </div>
       )}
       {!ready && (
@@ -74,15 +77,21 @@ function PreviewCanvas({ job }) {
           )}
         </div>
       )}
-      <div className="canvas-stage" hidden={!ready}>
+      <div className="canvas-stage" hidden={!ready || mode === 'angle'}>
         <canvas ref={raster} width={width} height={height} aria-label="Interlaced A4 raster" hidden={mode !== 'overview'} />
         <canvas ref={detail} className="detail" width={DETAIL_WIDTH} height={DETAIL_HEIGHT}
           aria-label="Magnified interlaced stripe crop" hidden={mode !== 'detail'} />
       </div>
-      {ready && <p className="muted preview-note" role="status">
+      {ready && mode !== 'angle' && <p className="muted preview-note" role="status">
         {mode === 'overview' ? 'Overview is scaled to fit. Switch to Stripe detail to inspect actual raster pixels.' :
           'Center crop of actual raster pixels, magnified without smoothing.'}
       </p>}
+      {ready && (
+        <>
+          <OpticalPreview active={mode === 'angle'} raster={raster} settings={job.settings} size={job.size} />
+          <PrintPngDownload raster={raster} ppi={job.settings.ppi} />
+        </>
+      )}
     </>
   )
 }

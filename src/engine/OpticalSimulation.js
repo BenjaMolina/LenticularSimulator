@@ -1,0 +1,73 @@
+import { createLensModel } from './LensModel.js'
+
+export function traceDisplacementMm(angleDeg, { depthMm, refractiveIndex }) {
+  if (!Number.isFinite(angleDeg) || Math.abs(angleDeg) >= 90 ||
+    !Number.isFinite(depthMm) || depthMm <= 0 ||
+    !Number.isFinite(refractiveIndex) || refractiveIndex < 1) {
+    throw new RangeError('Use a viewing angle between −90° and 90°, positive depth, and a refractive index of at least 1.')
+  }
+  const angleInside = Math.asin(Math.sin(angleDeg * Math.PI / 180) / refractiveIndex)
+  return depthMm * Math.tan(angleInside)
+}
+
+export function projectAngularColumns({ rasterWidth, previewWidth, settings, angleDeg, depthMm, refractiveIndex }) {
+  const { pixelsPerLens, effectivePitchMm } = createLensModel(settings)
+  const shiftPx = traceDisplacementMm(angleDeg, { depthMm, refractiveIndex }) * pixelsPerLens / effectivePitchMm
+  const radius = Math.max(1, pixelsPerLens / 8)
+  const cache = new Map()
+
+  return Array.from({ length: previewWidth }, (_, column) => {
+    const lens = Math.floor((column + 0.5) * rasterWidth / previewWidth / pixelsPerLens)
+    if (cache.has(lens)) return cache.get(lens)
+    const left = lens * pixelsPerLens
+    const right = (lens + 1) * pixelsPerLens
+    const hit = (lens + 0.5) * pixelsPerLens - shiftPx
+    const taps = []
+    let weightSum = 0
+    for (let x = Math.ceil(hit - radius - 0.5); x <= Math.floor(hit + radius - 0.5); x += 1) {
+      const center = x + 0.5
+      const weight = 1 - Math.abs(center - hit) / radius
+      if (weight <= 0) continue
+      weightSum += weight
+      if (x >= 0 && x < rasterWidth && center >= left && center < right) taps.push({ x, weight })
+    }
+    // Normalize against the unmasked response so a clipped ray loses coverage.
+    for (const tap of taps) tap.weight /= weightSum
+    cache.set(lens, taps)
+    return taps
+  })
+}
+
+const TO_LINEAR = Float64Array.from({ length: 256 }, (_, byte) => {
+  const value = byte / 255
+  return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
+})
+
+function toSrgb(value) {
+  return 255 * (value <= 0.0031308 ? 12.92 * value : 1.055 * value ** (1 / 2.4) - 0.055)
+}
+
+export function renderAngularFrame(source, sourceWidth, columns) {
+  const height = source.length / (4 * sourceWidth)
+  const output = new Uint8ClampedArray(columns.length * height * 4)
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < columns.length; x += 1) {
+      let r = 0, g = 0, b = 0, alpha = 0
+      for (const tap of columns[x]) {
+        const offset = (y * sourceWidth + tap.x) * 4
+        const weight = tap.weight * source[offset + 3] / 255
+        r += TO_LINEAR[source[offset]] * weight
+        g += TO_LINEAR[source[offset + 1]] * weight
+        b += TO_LINEAR[source[offset + 2]] * weight
+        alpha += weight
+      }
+      if (!alpha) continue
+      const offset = (y * columns.length + x) * 4
+      output[offset] = toSrgb(r / alpha)
+      output[offset + 1] = toSrgb(g / alpha)
+      output[offset + 2] = toSrgb(b / alpha)
+      output[offset + 3] = 255 * alpha
+    }
+  }
+  return output
+}

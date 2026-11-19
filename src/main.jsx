@@ -30,9 +30,9 @@ function App() {
         <div>
           <p className="eyebrow brand"><span aria-hidden="true" /> Interlacing workbench</p>
           <h1>Lenticular Optical Simulator</h1>
-          <p className="subtitle">Prepare and inspect an A4 flip raster before evaluating it with a physical lens.</p>
+          <p className="subtitle">Prepare an A4 flip raster and explore how its stripes respond to a change in angle.</p>
         </div>
-        <span className="tag hero-tag">Geometric preview only</span>
+        <span className="tag hero-tag">Uncalibrated optical preview</span>
       </header>
       <div className="workspace">
         <form className="controls" onSubmit={generate}>
@@ -54,7 +54,7 @@ function App() {
         </form>
         <InterlacedPreview job={job} />
       </div>
-      <footer>Local image processing · No optical simulation or ghosting estimates</footer>
+      <footer>Local image processing · Physical calibration required before estimating ghosting</footer>
     </main>
   )
 }

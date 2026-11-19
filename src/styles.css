@@ -102,6 +102,12 @@ progress { width: min(200px, 80%); accent-color: var(--accent); }
 .canvas-stage canvas { display: block; max-width: 100%; width: auto; height: auto; max-height: 68vh; object-fit: contain; }
 .canvas-stage .detail { width: min(100%, 576px); max-height: none; image-rendering: pixelated; }
 .preview-note { margin-top: .65rem; }
+.angular-preview { display: grid; gap: .75rem; }
+.angle-control { display: grid; gap: .35rem; color: var(--muted); font-size: .9rem; }
+.angle-control span { display: flex; justify-content: space-between; }
+.angle-control output { color: var(--accent); }
+.angle-control input { width: 100%; margin: 0; accent-color: var(--accent); }
+.export-actions { margin-top: .8rem; }
 footer { color: var(--muted); font-size: .78rem; margin-top: 1rem; }
 
 @media (max-width: 800px) {

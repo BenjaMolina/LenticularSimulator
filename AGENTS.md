@@ -4,8 +4,8 @@
 
 - React, JavaScript (no TypeScript), Vite, Canvas 2D, CSS, and Vitest. No backend or image uploads.
 - The current release supports vertical lenses, an A4 portrait raster, and two or three views. Defaults are 50 nominal/effective LPI, 600 PPI, and zero horizontal offset.
-- Do not present an image switcher, a color mixture, or the interlaced raster as optical simulation. Do not add ghosting metrics without a separately requested and validated physical model.
-- Treat `archivo.md` as the larger roadmap, not as the scope of the current release.
+- Angular preview must sample the interlaced raster through the documented uncalibrated model. Do not present image switching or arbitrary crossfades as optics, or report physical ghosting without calibration.
+- Treat `Contexto/` as the broader roadmap. See `docs/architecture.md` for the current model, units, print export, and limits.
 
 ## Implementation conventions
 

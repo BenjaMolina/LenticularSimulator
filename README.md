@@ -1,6 +1,6 @@
 # Lenticular Optical Simulator
 
-Prepare and inspect a vertical-lens, two- or three-image flip on an A4 raster. This release interlaces images; it does not simulate optics, estimate ghosting, or export print files.
+Prepare, inspect, and export a vertical-lens, two- or three-image flip on an A4 raster. The experimental angular preview is uncalibrated and does not estimate physical ghosting.
 
 ## Run locally
 
@@ -16,6 +16,8 @@ Open the localhost URL printed by Vite. Use a current desktop browser with Canva
 1. Add two or three JPG, PNG, or WebP images, or start with **Load test patterns**. Use the arrows to set the left-to-right order of views within each lens.
 2. Enter the calibrated **Effective LPI** and a signed horizontal offset in raster pixels. Defaults: 50 nominal and effective LPI, 600 PPI, zero offset.
 3. Select **Generate interlace**. Use **Stripe detail** to view a magnified crop of the actual raster without the overview's downsampling. Changing inputs invalidates the preceding result.
+4. Open **Angular preview** and move the angle slider. The depth and refractive index shown are illustrative assumptions, not measurements of a particular sheet.
+5. Select **Download print PNG** to save the interlaced raster at its original dimensions and selected PPI. Print at actual size; do not let the driver fit it to the page.
 
 Original files stay untouched. Thumbnails show the full sources. Raster preparation center-crops each image to A4's aspect ratio, then resamples to the common width and height without stretching it.
 
@@ -44,9 +46,9 @@ npm run build
 
 | Location | Role |
 | --- | --- |
-| `src/engine/` | Lens geometry, column assignment, and RGBA composition |
+| `src/engine/` | Lens geometry, column assignment, and angular sampling of the print raster |
 | `src/components/`, `src/utils/` | Image and setting controls, crop math, test patterns, and Canvas presentation |
 | `src/workers/` | Decoding and resampling originals in bounded row bands |
-| `src/tests/` | Geometry, color-band, phase, offset, and long-raster regression tests |
+| `src/tests/` | Print geometry, angular response, and PNG physical metadata |
 
-The conceptual roadmap is in `archivo.md`. Optical work needs a calibrated physical model and measurements before ghosting estimates can be meaningful.
+See [the architecture and model limits](docs/architecture.md). The [continuity package](Contexto/README_INICIO.md) describes the broader roadmap.
