@@ -16,7 +16,7 @@ Open the localhost URL printed by Vite. Use a current desktop browser with Canva
 1. Add two or three JPG, PNG, or WebP images, or start with **Load test patterns**. Use the arrows to set the left-to-right order of views within each lens.
 2. Enter the calibrated **Effective LPI** and a signed horizontal offset in raster pixels. Defaults: 50 nominal and effective LPI, 600 PPI, zero offset.
 3. Select **Generate interlace**. Use **Stripe detail** to view a magnified crop of the actual raster without the overview's downsampling. Changing inputs invalidates the preceding result.
-4. Open **Angular preview** and move the angle slider. The depth and refractive index shown are illustrative assumptions, not measurements of a particular sheet.
+4. Open **Angular preview** and move the angle slider. **Cylindrical lens** is an uncalibrated ray model; **Planar reference** preserves the earlier approximation. Optical inputs are illustrative unless you supply measured values.
 5. Select **Download print PNG** to save the interlaced raster at its original dimensions and selected PPI. Print at actual size; do not let the driver fit it to the page.
 
 Original files stay untouched. Thumbnails show the full sources. Raster preparation center-crops each image to A4's aspect ratio, then resamples to the common width and height without stretching it.
@@ -52,3 +52,5 @@ npm run build
 | `src/tests/` | Print geometry, angular response, and PNG physical metadata |
 
 See [the architecture and model limits](docs/architecture.md). The [continuity package](Contexto/README_INICIO.md) describes the broader roadmap.
+
+Use the [two-view calibration target and capture guide](docs/calibration.md) for the first physical comparison.
