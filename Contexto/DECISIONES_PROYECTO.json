@@ -1,0 +1,81 @@
+{
+  "project_name": "Lenticular Optical Simulator",
+  "prepared_on": "2026-11-19",
+  "language": "es",
+  "status": "planning_only_no_implementation",
+  "user_problem": "Previsualizar efectos lenticulares antes de imprimir y reducir desperdicio y ghosting.",
+  "existing_software": [
+    "3DMasterKit (licencia existente)"
+  ],
+  "user_explicit_decisions": {
+    "simulation_goal": "Optical simulation (option C), not merely GIF playback",
+    "front_end": "React",
+    "programming_language": "JavaScript (no TypeScript)",
+    "lenticular_sheet_nominal_lpi": 50,
+    "lens_orientation": "vertical",
+    "view_transition_axis": "horizontal",
+    "printer": "not yet selected"
+  },
+  "provisional_planning_choices": {
+    "build_tool": "Vite",
+    "rendering": "Canvas initially; WebGL optional",
+    "backend": "none for first MVP",
+    "initial_print_format": "A4",
+    "initial_image_count": [
+      2,
+      3
+    ],
+    "future_image_count_max": 10,
+    "export": [
+      "interlaced PNG",
+      "configuration report",
+      "GIF and TIFF in later phases"
+    ],
+    "opencv": "optional"
+  },
+  "modules": [
+    "ImageManager",
+    "LensConfiguration",
+    "InterlacingEngine",
+    "LensModel",
+    "RefractionModel",
+    "OpticalSimulation",
+    "GhostingAnalysis",
+    "PitchOptimizer",
+    "OpticalPreview",
+    "ImageExporter"
+  ],
+  "first_mvp": [
+    "React+Vite JavaScript app",
+    "2 images",
+    "50 LPI vertical",
+    "configurable effective image PPI",
+    "interlacing with fractional pitch",
+    "angular preview",
+    "explicit approximate response kernel",
+    "PNG export",
+    "math unit tests"
+  ],
+  "calibration_needed": [
+    "effective lens pitch",
+    "angular point spread / response",
+    "image registration and offset",
+    "printer/media/driver sampling",
+    "lens thickness and refractive index if physical model"
+  ],
+  "key_caveats": [
+    "Do not claim ghosting can be eliminated by software or pitch adjustment alone.",
+    "Do not report estimated channel contribution as physically measured.",
+    "Printer advertised DPI differs from image PPI.",
+    "0.05 pitch step in original prompt lacks a unit; define explicit unit before implementation.",
+    "Build a calibration workflow based on real print samples."
+  ],
+  "next_agent_action": "Read CONTEXTO_AGENTE.md and PROMPT_IMPLEMENTACION_REACT_JS.md; propose architecture and implement first verified MVP when requested.",
+  "files_in_package": [
+    "README_INICIO.md",
+    "CONTEXTO_AGENTE.md",
+    "TRANSCRIPCION_CONVERSACION.md",
+    "PROMPT_IMPLEMENTACION_REACT_JS.md",
+    "DECISIONES_PROYECTO.json"
+  ]
+}
