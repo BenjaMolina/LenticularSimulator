@@ -42,6 +42,10 @@ For each raster pixel center near the ray, use a tent response `max(0, 1 − abs
 
 The reference mode keeps the original 0.50 mm default depth and does not represent surface curvature.
 
+## Angular response diagnostic
+
+`engine/AngularResponse.js` groups the active projector's sample weights by their printed stripe index and averages across the same columns as the preview. The chart shows one curve per source view and a remainder for unassigned weight. The chart and slider share the same integer-degree samples. It does not renormalize away rejected samples or infer contributions from image colors, transparency, or brightness. The result describes the model, not measured optical transmission or physical ghosting.
+
 ## Verification and calibration boundary
 
 - Test sign and symmetry of the refracted ray, clipped aperture weights, fractional pitch, signed print offset, and continuous transitions with synthetic stripes.

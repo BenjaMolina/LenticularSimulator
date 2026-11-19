@@ -107,6 +107,16 @@ progress { width: min(200px, 80%); accent-color: var(--accent); }
 .angle-control span { display: flex; justify-content: space-between; }
 .angle-control output { color: var(--accent); }
 .angle-control input { width: 100%; margin: 0; accent-color: var(--accent); }
+.angular-diagnostics { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; }
+.angular-diagnostics h3 { margin: 0 0 .3rem; font-size: 1rem; }
+.angular-chart { display: block; width: 100%; max-height: 175px; }
+.angular-chart text { fill: var(--muted); font: 10px ui-monospace, monospace; }
+.chart-guide { stroke: var(--line); }
+.chart-cursor { stroke: #eef5f2; stroke-dasharray: 3 4; opacity: .7; }
+.angular-legend { display: grid; grid-template-columns: repeat(auto-fit, minmax(92px, 1fr)); gap: .55rem; font-size: .8rem; }
+.angular-legend dt { display: flex; gap: .35rem; align-items: center; }
+.angular-legend dd { margin: .15rem 0 0; font: 600 .95rem ui-monospace, monospace; }
+.legend-swatch { width: .55rem; height: .55rem; border-radius: 50%; flex: 0 0 .55rem; }
 .export-actions { margin-top: .8rem; }
 footer { color: var(--muted); font-size: .78rem; margin-top: 1rem; }
 

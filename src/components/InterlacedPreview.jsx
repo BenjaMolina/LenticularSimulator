@@ -88,7 +88,8 @@ function PreviewCanvas({ job }) {
       </p>}
       {ready && (
         <>
-          <OpticalPreview active={mode === 'angle'} raster={raster} settings={job.settings} size={job.size} />
+          <OpticalPreview active={mode === 'angle'} raster={raster} settings={job.settings} size={job.size}
+            viewCount={job.files.length} />
           <PrintPngDownload raster={raster} ppi={job.settings.ppi} />
         </>
       )}
