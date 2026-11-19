@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import ImageUploader from './components/ImageUploader.jsx'
 import InterlacedPreview from './components/InterlacedPreview.jsx'
 import LensSettings, { DEFAULTS, readSettings } from './components/LensSettings.jsx'
+import PrinterProfiles from './components/PrinterProfiles.jsx'
 import { a4Raster, createLensModel } from './engine/LensModel.js'
 import { isSupportedViewCount } from './engine/ViewCount.js'
 import './styles.css'
@@ -11,6 +12,7 @@ function App() {
   const [files, setFiles] = useState([])
   const [values, setValues] = useState(DEFAULTS)
   const [job, setJob] = useState(null)
+  const [printerProfile, setPrinterProfile] = useState(null)
   const sequence = useRef(0)
   const { settings, error } = readSettings(values)
   const lens = settings && createLensModel(settings)
@@ -22,7 +24,7 @@ function App() {
     event.preventDefault()
     if (!enoughImages || !settings || undersampled) return
     sequence.current += 1
-    setJob({ id: sequence.current, files, settings, size })
+    setJob({ id: sequence.current, files, settings, size, printerProfile })
   }
 
   return (
@@ -43,6 +45,12 @@ function App() {
           }} />
           <LensSettings values={values} lens={lens} size={size} onChange={(key, value) => {
             setValues((previous) => ({ ...previous, [key]: value }))
+            if (key === 'ppi') setPrinterProfile(null)
+            setJob(null)
+          }} />
+          <PrinterProfiles rasterPpi={settings?.ppi} active={printerProfile} onApply={(profile) => {
+            setValues((previous) => ({ ...previous, ppi: String(profile.rasterPpi) }))
+            setPrinterProfile(profile)
             setJob(null)
           }} />
           <div className="generate">

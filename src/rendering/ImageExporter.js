@@ -69,13 +69,15 @@ export async function encodePrintTiff(canvas, ppi, rowsPerStrip = 64) {
   return new Blob(parts, { type: 'image/tiff' })
 }
 
-export function createPrintReport({ size, settings, files }) {
+export function createPrintReport({ size, settings, files, printerProfile }) {
   const { ppi, nominalLpi, effectiveLpi, offsetPx } = settings
+  const preset = printerProfile?.rasterPpi === ppi ? printerProfile : null
   return {
     schema: 'lenticular.print-job/v1',
     calibration: 'uncalibrated',
     raster: { widthPx: size.width, heightPx: size.height, ppi, paper: 'A4 portrait' },
     interlace: { nominalLpi, effectiveLpi, offsetPx, lensOrientation: 'vertical' },
     sources: files.map(({ name }) => name),
+    ...(preset ? { printerPreset: { name: preset.name, printer: preset.printer, media: preset.media, notes: preset.notes } } : {}),
   }
 }

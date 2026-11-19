@@ -14,6 +14,8 @@ The print raster is the source of truth. The browser produces that raster once, 
 
 `engine/ViewCount.js` sets the 2–10 integer view limit shared by upload validation, the column map, and the theoretical search. The pixel-center stripe rule is unchanged; raising the count narrows each stripe and therefore raises the minimum usable raster PPI.
 
+Printer presets are independent local records (`lenticular.printer-profile/v1`), separate from optical sheet profiles. Applying one changes raster PPI only, invalidates the previous job, and records the applied printer/media notes in the next job report. A manual PPI edit clears the association. The software does not configure real printer hardware.
+
 ## Cylindrical preview (uncalibrated)
 
 Trace 17 evenly spaced rays across the circular cross-section of a vertical lenticule. At surface point `x`, the sag is `z = R − sqrt(R² − x²)`, and the inward unit normal points toward the circle center. Backward rays come from air at the selected angle. For incident direction `I`, inward normal `N`, and `η = 1/n`, the transmitted direction is:

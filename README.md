@@ -62,3 +62,5 @@ npm run build
 See [the architecture and model limits](docs/architecture.md). The [continuity package](Contexto/README_INICIO.md) describes the broader roadmap.
 
 Use the [two-view calibration target and capture guide](docs/calibration.md) for the first physical comparison.
+
+**Printer presets** save the current raster PPI, a printer or print-service name, media, and driver notes in this browser. **Apply printer preset** changes only raster PPI; regenerate the raster to use it. The new job report includes the applied notes when the preset still matches the generated raster. This is not device DPI, a printer driver setting, or calibration.
