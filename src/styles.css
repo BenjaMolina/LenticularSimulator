@@ -130,6 +130,9 @@ progress { width: min(200px, 80%); accent-color: var(--accent); }
 .pitch-results li { padding: .45rem 0; border-bottom: 1px solid var(--line); }
 .pitch-results li > div { margin-bottom: .3rem; }
 .pitch-results li p { margin: .2rem 0 0; }
+.sheet-profiles { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; }
+.sheet-profiles summary { cursor: pointer; font-weight: 600; }
+.sheet-profiles p, .sheet-profiles .fields { margin-top: .65rem; }
 .export-actions { margin-top: .8rem; }
 footer { color: var(--muted); font-size: .78rem; margin-top: 1rem; }
 

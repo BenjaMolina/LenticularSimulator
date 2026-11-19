@@ -52,6 +52,8 @@ The reference mode keeps the original 0.50 mm default depth and does not represe
 
 ## Verification and calibration boundary
 
+`models/LenticularProfile.js` validates the versioned `lenticular.sheet-profile/v1` document: a name, uncalibrated status, and numeric sheet LPI, radius, depth, and refractive index. Browser storage adds independent records. The file does not contain image data, print settings, or measured calibration. Unknown schema versions and calibrated claims are rejected rather than silently interpreted.
+
 - Test sign and symmetry of the refracted ray, clipped aperture weights, fractional pitch, signed print offset, and continuous transitions with synthetic stripes.
 - Check the cylinder against planar refraction at its apex, paraxial focus, invalid sheet geometry, and pitch mismatch independently of printing.
 - Check exported PNG dimensions and pixels against the print raster; verify its physical-density chunk independently. The physical print workflow must still honor the PNG size without automatic rescaling.

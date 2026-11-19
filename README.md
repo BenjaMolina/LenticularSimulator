@@ -25,6 +25,8 @@ Open **Compare across angles** to overlay A and B from −40° to +40° for a se
 
 Within that panel, open **Search print settings**, choose a target angle for each view, and run the bounded search. It ranks up to five suggestions by the weakest intended view first. **Use in B** lets you inspect a suggestion without applying it to the actual print.
 
+Under **Angular preview → Sheet profiles**, name and save valid cylindrical settings, or import and export a profile JSON file. Saving or importing adds a new local profile. **Apply profile** changes the optical preview only; print LPI, offset, and the PNG remain unchanged. Profiles are not calibration evidence.
+
 Original files stay untouched. Thumbnails show the full sources. Raster preparation center-crops each image to A4's aspect ratio, then resamples to the common width and height without stretching it.
 
 ## Lens equations

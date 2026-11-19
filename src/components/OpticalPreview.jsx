@@ -5,6 +5,7 @@ import { cylindricalProfileError } from '../engine/RefractionModel.js'
 import { drawRgba, sampleRasterRows } from '../rendering/CanvasRenderer.js'
 import AngularDiagnostics from './AngularDiagnostics.jsx'
 import PrintComparison from './PrintComparison.jsx'
+import SheetProfiles from './SheetProfiles.jsx'
 
 const PREVIEW_WIDTH = 360
 
@@ -85,6 +86,16 @@ export default function OpticalPreview({ active, raster, settings, size, viewCou
         )}
       </div>
       {curved && <p className="muted">Blank sheet LPI uses the printed effective LPI. A different sheet LPI changes only this preview.</p>}
+      {active && (
+        <SheetProfiles optics={{ sheetLpi, radiusMm, depthMm, refractiveIndex }} canSave={curved && !issue}
+          onApply={(optics) => {
+            setModel('cylindrical')
+            setSheet(String(optics.sheetLpi))
+            setRadius(String(optics.radiusMm))
+            setCurvedDepth(String(optics.depthMm))
+            setIndex(String(optics.refractiveIndex))
+          }} />
+      )}
       {(issue || error) && <p className="error" role={issue ? 'status' : 'alert'}>{issue || error}</p>}
       <div className="canvas-stage" hidden={!!(issue || error)}>
         <canvas ref={output} width={previewWidth} height={previewHeight} aria-label="Uncalibrated angular raster" />
