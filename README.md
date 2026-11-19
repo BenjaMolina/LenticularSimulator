@@ -19,6 +19,10 @@ Open the localhost URL printed by Vite. Use a current desktop browser with Canva
 4. Open **Angular preview** and move the angle slider. **Cylindrical lens** is an uncalibrated ray model; **Planar reference** preserves the earlier approximation. The response chart shows which views the model samples at each angle, not measured ghosting.
 5. Select **Download print PNG** to save the interlaced raster at its original dimensions and selected PPI. Print at actual size; do not let the driver fit it to the page.
 
+To experiment before printing, open **Compare print settings A/B** under the response chart. A is the generated print; B changes only the effective print LPI and horizontal offset in the theoretical comparison. Move the same angle slider to compare the two. B does not change the exported PNG.
+
+Open **Compare across angles** to overlay A and B from −40° to +40° for a selected view or the unassigned weight. This shows whether a change helps around the target angle as well as at the target itself.
+
 Original files stay untouched. Thumbnails show the full sources. Raster preparation center-crops each image to A4's aspect ratio, then resamples to the common width and height without stretching it.
 
 ## Lens equations

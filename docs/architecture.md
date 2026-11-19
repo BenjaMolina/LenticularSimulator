@@ -46,6 +46,8 @@ The reference mode keeps the original 0.50 mm default depth and does not represe
 
 `engine/AngularResponse.js` groups the active projector's sample weights by their printed stripe index and averages across the same columns as the preview. The chart shows one curve per source view and a remainder for unassigned weight. The chart and slider share the same integer-degree samples. It does not renormalize away rejected samples or infer contributions from image colors, transparency, or brightness. The result describes the model, not measured optical transmission or physical ghosting.
 
+`engine/PrintComparison.js` groups the **same projected samples** against two different stripe maps, at one angle for the table or across the preview range for the overlay. It traces each requested angle once and builds each stripe map once per comparison. This keeps the virtual sheet and model fixed even when sheet LPI defaults to A's print pitch. B changes only print effective LPI and offset; it does not redraw or export a different print. To print B, enter those settings in the print panel and regenerate.
+
 ## Verification and calibration boundary
 
 - Test sign and symmetry of the refracted ray, clipped aperture weights, fractional pitch, signed print offset, and continuous transitions with synthetic stripes.

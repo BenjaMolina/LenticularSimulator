@@ -4,6 +4,7 @@ import { projectAngularColumns, projectCylindricalColumns, renderAngularFrame } 
 import { cylindricalProfileError } from '../engine/RefractionModel.js'
 import { drawRgba, sampleRasterRows } from '../rendering/CanvasRenderer.js'
 import AngularDiagnostics from './AngularDiagnostics.jsx'
+import PrintComparison from './PrintComparison.jsx'
 
 const PREVIEW_WIDTH = 360
 
@@ -89,8 +90,12 @@ export default function OpticalPreview({ active, raster, settings, size, viewCou
         <canvas ref={output} width={previewWidth} height={previewHeight} aria-label="Uncalibrated angular raster" />
       </div>
       {active && !issue && !error && (
-        <AngularDiagnostics rasterWidth={size.width} settings={settings} viewCount={viewCount}
-          angleDeg={angleDeg} project={project} />
+        <>
+          <AngularDiagnostics rasterWidth={size.width} settings={settings} viewCount={viewCount}
+            angleDeg={angleDeg} project={project} />
+          <PrintComparison rasterWidth={size.width} settings={settings} viewCount={viewCount}
+            angleDeg={angleDeg} project={project} />
+        </>
       )}
     </section>
   )

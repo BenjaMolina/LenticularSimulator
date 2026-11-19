@@ -117,6 +117,15 @@ progress { width: min(200px, 80%); accent-color: var(--accent); }
 .angular-legend dt { display: flex; gap: .35rem; align-items: center; }
 .angular-legend dd { margin: .15rem 0 0; font: 600 .95rem ui-monospace, monospace; }
 .legend-swatch { width: .55rem; height: .55rem; border-radius: 50%; flex: 0 0 .55rem; }
+.print-comparison { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; }
+.print-comparison summary { cursor: pointer; font-weight: 600; }
+.print-comparison p, .print-comparison .fields, .print-comparison table { margin-top: .65rem; }
+.print-comparison table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.print-comparison caption { text-align: left; color: var(--muted); margin-bottom: .3rem; }
+.print-comparison th, .print-comparison td { border-bottom: 1px solid var(--line); padding: .35rem .3rem; text-align: right; }
+.print-comparison th:first-child { text-align: left; }
+.print-comparison td { min-width: 4.2rem; }
+.comparison-curves { border-top: 1px solid var(--line); margin-top: .9rem; padding-top: .75rem; }
 .export-actions { margin-top: .8rem; }
 footer { color: var(--muted); font-size: .78rem; margin-top: 1rem; }
 
