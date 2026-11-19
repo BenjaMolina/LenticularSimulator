@@ -1,11 +1,13 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import OpticalPreview from './OpticalPreview.jsx'
 import PrintPngDownload from './PrintPngDownload.jsx'
 import ProductionExports from './ProductionExports.jsx'
+import WorkspaceTabs, { WorkspaceTabPanel } from './WorkspaceTabs.jsx'
 import { MIN_VIEWS, MAX_VIEWS } from '../engine/ViewCount.js'
 
 const DETAIL_WIDTH = 144
 const DETAIL_HEIGHT = 80
+const OUTPUT_TABS = [['raster', 'Raster'], ['angular', 'Angular preview'], ['compare', 'Compare'], ['export', 'Export']]
 
 function PreviewCanvas({ job }) {
   const raster = useRef(null)
@@ -13,6 +15,8 @@ function PreviewCanvas({ job }) {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState('')
   const [mode, setMode] = useState('overview')
+  const [tab, setTab] = useState('raster')
+  const tabsId = useId()
   const { width, height } = job.size
 
   useEffect(() => {
@@ -62,13 +66,7 @@ function PreviewCanvas({ job }) {
   const ready = !error && progress === height
   return (
     <>
-      {ready && (
-        <div className="view-toggle" role="group" aria-label="Raster display">
-          <button type="button" aria-pressed={mode === 'overview'} onClick={() => setMode('overview')}>Overview</button>
-          <button type="button" aria-pressed={mode === 'detail'} onClick={() => setMode('detail')}>Stripe detail</button>
-          <button type="button" aria-pressed={mode === 'angle'} onClick={() => setMode('angle')}>Angular preview</button>
-        </div>
-      )}
+      {ready && <WorkspaceTabs id={tabsId} label="Output workspace" tabs={OUTPUT_TABS} selected={tab} onSelect={setTab} />}
       {!ready && (
         <div className="placeholder">
           {error ? <p className="error" role="alert">{error}</p> : (
@@ -79,21 +77,31 @@ function PreviewCanvas({ job }) {
           )}
         </div>
       )}
-      <div className="canvas-stage" hidden={!ready || mode === 'angle'}>
-        <canvas ref={raster} width={width} height={height} aria-label="Interlaced A4 raster" hidden={mode !== 'overview'} />
-        <canvas ref={detail} className="detail" width={DETAIL_WIDTH} height={DETAIL_HEIGHT}
-          aria-label="Magnified interlaced stripe crop" hidden={mode !== 'detail'} />
-      </div>
-      {ready && mode !== 'angle' && <p className="muted preview-note" role="status">
-        {mode === 'overview' ? 'Overview is scaled to fit. Switch to Stripe detail to inspect actual raster pixels.' :
-          'Center crop of actual raster pixels, magnified without smoothing.'}
-      </p>}
+      <WorkspaceTabPanel id={tabsId} tab="raster" active={ready && tab === 'raster'}>
+        <div className="view-toggle" role="group" aria-label="Raster display">
+          <button type="button" aria-pressed={mode === 'overview'} onClick={() => setMode('overview')}>Overview</button>
+          <button type="button" aria-pressed={mode === 'detail'} onClick={() => setMode('detail')}>Stripe detail</button>
+        </div>
+        <div className="canvas-stage">
+          <canvas ref={raster} width={width} height={height} aria-label="Interlaced A4 raster" hidden={mode !== 'overview'} />
+          <canvas ref={detail} className="detail" width={DETAIL_WIDTH} height={DETAIL_HEIGHT}
+            aria-label="Magnified interlaced stripe crop" hidden={mode !== 'detail'} />
+        </div>
+        <p className="muted preview-note" role="status">
+          {mode === 'overview' ? 'Overview is scaled to fit. Switch to Stripe detail to inspect actual raster pixels.' :
+            'Center crop of actual raster pixels, magnified without smoothing.'}
+        </p>
+      </WorkspaceTabPanel>
       {ready && (
         <>
-          <OpticalPreview active={mode === 'angle'} raster={raster} settings={job.settings} size={job.size}
+          <OpticalPreview tab={tab} tabsId={tabsId} raster={raster} settings={job.settings} size={job.size}
             viewCount={job.files.length} />
-          <PrintPngDownload raster={raster} ppi={job.settings.ppi} />
-          <ProductionExports raster={raster} job={job} />
+          <WorkspaceTabPanel id={tabsId} tab="export" active={tab === 'export'} className="output-export">
+            <h3>Download this print</h3>
+            <p className="muted">Export the finished A4 raster at {job.settings.ppi} PPI, or download its job settings.</p>
+            <PrintPngDownload raster={raster} ppi={job.settings.ppi} />
+            <ProductionExports raster={raster} job={job} />
+          </WorkspaceTabPanel>
         </>
       )}
     </>
@@ -104,7 +112,7 @@ export default function InterlacedPreview({ job }) {
   return (
     <section className="panel preview" aria-labelledby="output-heading">
       <header className="panel-header">
-        <div><p className="eyebrow">03 / Raster</p><h2 id="output-heading">Interlaced output</h2></div>
+        <div><p className="eyebrow">03 / Output</p><h2 id="output-heading">Output workspace</h2></div>
         <span className="tag">Canvas</span>
       </header>
       {job ? <PreviewCanvas key={job.id} job={job} /> : (

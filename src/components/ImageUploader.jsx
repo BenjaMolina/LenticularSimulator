@@ -73,7 +73,7 @@ export default function ImageUploader({ images, onChange }) {
       </header>
       <p className="muted">Add {MIN_VIEWS} to {MAX_VIEWS} images in stripe order. Originals stay unchanged; the raster uses a centered A4 crop.</p>
       {!!images.length && (
-        <ol className="source-list">
+        <ol className="source-list" aria-label="Source image order" tabIndex={images.length > 3 ? 0 : undefined}>
           {images.map((file, index) => (
             <li key={index} className="source">
               <Thumbnail file={file} />

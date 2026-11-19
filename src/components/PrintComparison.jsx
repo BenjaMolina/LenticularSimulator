@@ -6,7 +6,7 @@ import PrintComparisonChart from './PrintComparisonChart.jsx'
 
 const percent = (value) => `${(value * 100).toFixed(1)}%`
 
-export default function PrintComparison({ rasterWidth, settings, viewCount, angleDeg, project }) {
+export default function PrintComparison({ active, rasterWidth, settings, viewCount, angleDeg, project }) {
   const [effectiveLpi, setEffectiveLpi] = useState(String(settings.effectiveLpi))
   const [offsetPx, setOffset] = useState(String(settings.offsetPx))
   const validation = readSettings({
@@ -15,7 +15,7 @@ export default function PrintComparison({ rasterWidth, settings, viewCount, angl
 
   let issue = validation.error
   let comparison
-  if (validation.settings) {
+  if (active && validation.settings) {
     try {
       comparison = comparePrintSettings({
         rasterWidth, settings, viewCount, angleDeg, project, candidate: validation.settings,
@@ -26,8 +26,8 @@ export default function PrintComparison({ rasterWidth, settings, viewCount, angl
   }
 
   return (
-    <details className="print-comparison">
-      <summary>Compare print settings A/B</summary>
+    <section className="print-comparison" aria-labelledby="print-comparison-heading">
+      <h3 id="print-comparison-heading">Compare print settings A/B</h3>
       <p className="muted">
         A is the generated print ({settings.effectiveLpi} effective LPI, offset {settings.offsetPx} px).
         Both use the same sheet, optical model, and viewing angle. B is a virtual comparison only.
@@ -68,6 +68,6 @@ export default function PrintComparison({ rasterWidth, settings, viewCount, angl
           setEffectiveLpi(String(candidate.effectiveLpi))
           setOffset(String(candidate.offsetPx))
         }} />
-    </details>
+    </section>
   )
 }
