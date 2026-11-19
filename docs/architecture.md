@@ -12,6 +12,8 @@ The print raster is the source of truth. The browser produces that raster once, 
 | `rendering/CanvasRenderer.js` | Read raster rows and paint preview pixels. It does not own lens math. |
 | PNG export | Encode the finished raster, then set the PNG physical-density chunk without changing its dimensions or pixels. |
 
+`engine/ViewCount.js` sets the 2–10 integer view limit shared by upload validation, the column map, and the theoretical search. The pixel-center stripe rule is unchanged; raising the count narrows each stripe and therefore raises the minimum usable raster PPI.
+
 ## Cylindrical preview (uncalibrated)
 
 Trace 17 evenly spaced rays across the circular cross-section of a vertical lenticule. At surface point `x`, the sag is `z = R − sqrt(R² − x²)`, and the inward unit normal points toward the circle center. Backward rays come from air at the selected angle. For incident direction `I`, inward normal `N`, and `η = 1/n`, the transmitted direction is:

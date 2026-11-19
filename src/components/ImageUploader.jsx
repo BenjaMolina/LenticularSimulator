@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { createTestPatterns } from '../utils/demoImages.js'
+import { MIN_VIEWS, MAX_VIEWS } from '../engine/ViewCount.js'
 
 const ACCEPT = 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp'
-const MAX_VIEWS = 3
 
 function supported(file) {
   return ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) ||
@@ -33,7 +33,7 @@ export default function ImageUploader({ images, onChange }) {
     setError('')
     if (!files.length) return
     if (files.some((file) => !supported(file))) return setError('Choose JPG, PNG, or WebP images.')
-    if (images.length + files.length > MAX_VIEWS) return setError('You can use at most three images.')
+    if (images.length + files.length > MAX_VIEWS) return setError(`You can use at most ${MAX_VIEWS} images.`)
     onChange([...images, ...files])
   }
 
@@ -53,11 +53,11 @@ export default function ImageUploader({ images, onChange }) {
     setError('')
   }
 
-  async function loadDemo() {
+  async function loadDemo(count) {
     setLoadingDemo(true)
     setError('')
     try {
-      onChange(await createTestPatterns())
+      onChange(await createTestPatterns(count))
     } catch (cause) {
       setError(cause.message)
     } finally {
@@ -69,9 +69,9 @@ export default function ImageUploader({ images, onChange }) {
     <section className="panel" aria-labelledby="source-heading">
       <header className="panel-header">
         <div><p className="eyebrow">01 / Inputs</p><h2 id="source-heading">Source images</h2></div>
-        <span className="tag">{images.length} / 3</span>
+        <span className="tag">{images.length} / {MAX_VIEWS}</span>
       </header>
-      <p className="muted">Add two or three images in stripe order. Originals stay unchanged; the raster uses a centered A4 crop.</p>
+      <p className="muted">Add {MIN_VIEWS} to {MAX_VIEWS} images in stripe order. Originals stay unchanged; the raster uses a centered A4 crop.</p>
       {!!images.length && (
         <ol className="source-list">
           {images.map((file, index) => (
@@ -113,9 +113,14 @@ export default function ImageUploader({ images, onChange }) {
           </label>
         )}
         {images.length === 0 && (
-          <button type="button" disabled={loadingDemo} onClick={loadDemo}>
-            {loadingDemo ? 'Creating patterns…' : 'Load test patterns'}
-          </button>
+          <>
+            <button type="button" disabled={loadingDemo} onClick={() => loadDemo(3)}>
+              {loadingDemo ? 'Creating patterns…' : 'Load test patterns'}
+            </button>
+            <button type="button" disabled={loadingDemo} onClick={() => loadDemo(MAX_VIEWS)}>
+              Load {MAX_VIEWS} test patterns
+            </button>
+          </>
         )}
       </div>
       {error && <p className="error" role="alert">{error}</p>}

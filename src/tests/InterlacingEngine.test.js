@@ -6,6 +6,7 @@ const colors = [
   [230, 45, 20, 255],
   [20, 200, 76, 255],
   [39, 95, 230, 255],
+  ...Array.from({ length: 7 }, (_, i) => [20 + i * 27, 80 + i * 19, 50 + i * 16, 255]),
 ]
 const lens = (ppi = 600, effectiveLpi = 50, offsetPx = 0) =>
   createLensModel({ nominalLpi: 50, effectiveLpi, ppi, offsetPx })
@@ -39,6 +40,25 @@ describe('vertical interlacing', () => {
   it('writes four columns per view at 50 LPI / 600 PPI with three views', () => {
     const expected = runs([0, 4], [1, 4], [2, 4], [0, 4], [1, 4], [2, 4])
     verifyColors(buildColumnMap(24, 3, lens()), expected, 3)
+  })
+
+  it('preserves the order of four and ten views at 50 LPI / 600 PPI', () => {
+    const four = runs([0, 3], [1, 3], [2, 3], [3, 3])
+    verifyColors(buildColumnMap(12, 4, lens()), four, 4)
+    const ten = [0, 1, 2, 2, 3, 4, 5, 6, 7, 7, 8, 9]
+    verifyColors(buildColumnMap(24, 10, lens()), [...ten, ...ten], 10)
+  })
+
+  it('keeps ten fractional views aligned across A4 at 720 PPI', () => {
+    const { width } = a4Raster(720)
+    const expected = Array.from({ length: width }, (_, x) => Math.floor((2 * x + 1) * 25 / 72) % 10)
+    expect([...buildColumnMap(width, 10, lens(720))]).toEqual(expected)
+  })
+
+  it('rejects view counts outside the supported integer range', () => {
+    for (const count of [1, 2.5, 11]) {
+      expect(() => buildColumnMap(12, count, lens())).toThrow('Between 2 and 10 views are required.')
+    }
   })
 
   it('distributes fractional stripes instead of rounding each lens at 720 PPI', () => {

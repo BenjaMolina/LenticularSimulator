@@ -3,7 +3,7 @@
 ## Scope
 
 - React, JavaScript (no TypeScript), Vite, Canvas 2D, CSS, and Vitest. No backend or image uploads.
-- The current release supports vertical lenses, an A4 portrait raster, and two or three views. Defaults are 50 nominal/effective LPI, 600 PPI, and zero horizontal offset.
+- The current release supports vertical lenses, an A4 portrait raster, and 2–10 views. Defaults are 50 nominal/effective LPI, 600 PPI, and zero horizontal offset.
 - Angular preview must sample the interlaced raster through the documented uncalibrated model. Do not present image switching or arbitrary crossfades as optics, or report physical ghosting without calibration.
 - Treat `Contexto/` as the broader roadmap. See `docs/architecture.md` for the current model, units, print export, and limits.
 

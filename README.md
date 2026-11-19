@@ -1,6 +1,6 @@
 # Lenticular Optical Simulator
 
-Prepare, inspect, and export a vertical-lens, two- or three-image flip on an A4 raster. The experimental angular preview is uncalibrated and does not estimate physical ghosting.
+Prepare, inspect, and export a vertical-lens flip with 2–10 views on an A4 raster. The experimental angular preview is uncalibrated and does not estimate physical ghosting.
 
 ## Run locally
 
@@ -13,7 +13,7 @@ npm run dev
 
 Open the localhost URL printed by Vite. Use a current desktop browser with Canvas 2D, module workers, and OffscreenCanvas. Images are processed locally; no backend or upload service is used.
 
-1. Add two or three JPG, PNG, or WebP images, or start with **Load test patterns**. Use the arrows to set the left-to-right order of views within each lens.
+1. Add 2–10 JPG, PNG, or WebP images, or start with **Load test patterns** (three images) or **Load 10 test patterns**. Use the arrows to set the left-to-right order of views within each lens.
 2. Enter the calibrated **Effective LPI** and a signed horizontal offset in raster pixels. Defaults: 50 nominal and effective LPI, 600 PPI, zero offset.
 3. Select **Generate interlace**. Use **Stripe detail** to view a magnified crop of the actual raster without the overview's downsampling. Changing inputs invalidates the preceding result.
 4. Open **Angular preview** and move the angle slider. **Cylindrical lens** is an uncalibrated ray model; **Planar reference** preserves the earlier approximation. The response chart shows which views the model samples at each angle, not measured ghosting.
@@ -43,7 +43,7 @@ Original files stay untouched. Thumbnails show the full sources. Raster preparat
 
 Columns are sampled at their centers. Positive offset moves stripes right; an exact stripe boundary selects the stripe to its right. The implementation snaps values within floating-point roundoff of an integer before flooring. Pitch is never rounded or repeatedly added, so strip boundaries do not drift across the page. At 600 PPI and 50 LPI a lens is 12 px wide (6 or 4 px per view); at 720 PPI it is 14.4 px wide and stripe widths vary on the discrete raster.
 
-PPI describes the image raster, not the printer's addressable dot density. The app accepts 72–900 PPI and requires at least one raster pixel per view per ideal lens period. High settings use significant browser memory: the A4 page at 600 PPI alone has about 139 MB of RGBA pixels. Tiled processing avoids retaining extra full-page copies of each normalized source.
+PPI describes the image raster, not the printer's addressable dot density. The app accepts 72–900 PPI and requires at least one raster pixel per view per ideal lens period. For ten views at 50 effective LPI, the minimum is 500 PPI. High settings use significant browser memory: the A4 page at 600 PPI alone has about 139 MB of RGBA pixels, and decoded originals also use memory. Tiled processing avoids retaining extra full-page copies of each normalized source.
 
 ## Verify and navigate
 

@@ -4,6 +4,7 @@ import ImageUploader from './components/ImageUploader.jsx'
 import InterlacedPreview from './components/InterlacedPreview.jsx'
 import LensSettings, { DEFAULTS, readSettings } from './components/LensSettings.jsx'
 import { a4Raster, createLensModel } from './engine/LensModel.js'
+import { isSupportedViewCount } from './engine/ViewCount.js'
 import './styles.css'
 
 function App() {
@@ -14,7 +15,7 @@ function App() {
   const { settings, error } = readSettings(values)
   const lens = settings && createLensModel(settings)
   const size = settings && a4Raster(settings.ppi)
-  const enoughImages = files.length === 2 || files.length === 3
+  const enoughImages = isSupportedViewCount(files.length)
   const undersampled = enoughImages && lens && lens.pixelsPerLens < files.length
 
   function generate(event) {

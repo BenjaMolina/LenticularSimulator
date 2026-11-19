@@ -2,10 +2,17 @@ const PALETTES = [
   ['#f48971', '#7a2538'],
   ['#66d9af', '#0b6a61'],
   ['#7caaff', '#3c3b91'],
+  ['#fadc78', '#956516'],
+  ['#ed88bd', '#85275e'],
+  ['#70d4df', '#2b5a75'],
+  ['#bce879', '#3b7029'],
+  ['#c6a0ec', '#5f3984'],
+  ['#f9ae77', '#925329'],
+  ['#cad6e4', '#41536a'],
 ]
 
-export function createTestPatterns() {
-  return Promise.all(PALETTES.map(([light, dark], index) => {
+export function createTestPatterns(count = 3) {
+  return Promise.all(PALETTES.slice(0, count).map(([light, dark], index) => {
     const canvas = document.createElement('canvas')
     canvas.width = 420
     canvas.height = 594

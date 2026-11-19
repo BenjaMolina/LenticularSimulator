@@ -1,9 +1,15 @@
 import { buildAngularResponse, MIN_PREVIEW_ANGLE, MAX_PREVIEW_ANGLE } from './AngularResponse.js'
+import { isSupportedViewCount } from './ViewCount.js'
 
 export const PITCH_SEARCH_LIMITS = Object.freeze({
   lpi: { step: 0.05, maxRadius: 0.5 },
   offset: { step: 0.5, maxRadius: 2.5 },
 })
+
+export function defaultTargetAngles(viewCount) {
+  if (!isSupportedViewCount(viewCount)) throw new RangeError('Unsupported target view count.')
+  return Array.from({ length: viewCount }, (_, index) => Math.round(12 - 24 * index / (viewCount - 1)))
+}
 
 function radiusSteps(value, { step, maxRadius }, name) {
   const steps = Math.round(value / step)
@@ -14,7 +20,7 @@ function radiusSteps(value, { step, maxRadius }, name) {
 }
 
 export function findPitchCandidates({ rasterWidth, settings, viewCount, targetAngles, lpiRadius, offsetRadius, project }) {
-  if ((viewCount !== 2 && viewCount !== 3) || targetAngles.length !== viewCount ||
+  if (!isSupportedViewCount(viewCount) || targetAngles.length !== viewCount ||
       new Set(targetAngles).size !== viewCount ||
       targetAngles.some((angle) => !Number.isInteger(angle) || angle < MIN_PREVIEW_ANGLE || angle > MAX_PREVIEW_ANGLE)) {
     throw new RangeError(`Give every view a distinct whole-degree target angle between ${MIN_PREVIEW_ANGLE}° and ${MAX_PREVIEW_ANGLE}°.`)

@@ -1,9 +1,24 @@
 import { describe, expect, it, vi } from 'vitest'
-import { findPitchCandidates } from '../engine/PitchOptimizer.js'
+import { defaultTargetAngles, findPitchCandidates } from '../engine/PitchOptimizer.js'
 
 const settings = { nominalLpi: 50, effectiveLpi: 50, ppi: 600, offsetPx: 0 }
 
 describe('bounded theoretical pitch search', () => {
+  it('keeps the previous defaults and projects a distinct ordered target for every one of ten views', () => {
+    expect(defaultTargetAngles(2)).toEqual([12, -12])
+    expect(defaultTargetAngles(3)).toEqual([12, 0, -12])
+    const targetAngles = defaultTargetAngles(10)
+    expect(targetAngles).toEqual([12, 9, 7, 4, 1, -1, -4, -7, -9, -12])
+    const stripeCenters = [0, 1, 2, 4, 5, 6, 7, 8, 10, 11]
+    const project = vi.fn((angle) => [[{ x: stripeCenters[targetAngles.indexOf(angle)], weight: 0.9 }]])
+    const result = findPitchCandidates({
+      rasterWidth: 12, settings, viewCount: 10, targetAngles, lpiRadius: 0, offsetRadius: 0, project,
+    })
+    expect(project.mock.calls).toEqual(targetAngles.map((angle) => [angle]))
+    expect(result.tested).toBe(1)
+    expect(result.baseline.worstShare).toBeCloseTo(0.9, 12)
+  })
+
   it('favors the weakest intended view over the higher mean and traces each angle only once', () => {
     const project = vi.fn((angle) => angle > 0
       ? [[{ x: 5, weight: 0.4 }, { x: 0, weight: 0.5 }]]

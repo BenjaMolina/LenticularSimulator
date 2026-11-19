@@ -9,6 +9,13 @@ const SERIES = [
   { color: '#91ebc7', dash: undefined },
   { color: '#ffbc91', dash: '7 3' },
   { color: '#b8b5ff', dash: '3 3' },
+  { color: '#fadc78', dash: '8 2 2 2' },
+  { color: '#f58fa8', dash: '11 3' },
+  { color: '#72d9ef', dash: '5 2 2 2' },
+  { color: '#cbe99a', dash: '2 4' },
+  { color: '#df9deb', dash: '10 4 2 4' },
+  { color: '#9cacff', dash: '14 3' },
+  { color: '#f4a484', dash: '4 2 1 2' },
   { color: '#b0c2c0', dash: '1 4' },
 ]
 const xAt = (angle) => 39 + (angle - MIN_PREVIEW_ANGLE) * 300 / (MAX_PREVIEW_ANGLE - MIN_PREVIEW_ANGLE)

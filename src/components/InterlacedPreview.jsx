@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import OpticalPreview from './OpticalPreview.jsx'
 import PrintPngDownload from './PrintPngDownload.jsx'
+import { MIN_VIEWS, MAX_VIEWS } from '../engine/ViewCount.js'
 
 const DETAIL_WIDTH = 144
 const DETAIL_HEIGHT = 80
@@ -108,7 +109,7 @@ export default function InterlacedPreview({ job }) {
         <div className="placeholder">
           <div className="plate" aria-hidden="true" />
           <p>No raster generated</p>
-          <p className="muted">Add two or three sources, then generate the interlace.</p>
+          <p className="muted">Add {MIN_VIEWS} to {MAX_VIEWS} sources, then generate the interlace.</p>
         </div>
       )}
     </section>

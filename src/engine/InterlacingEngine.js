@@ -1,5 +1,7 @@
+import { isSupportedViewCount, MIN_VIEWS, MAX_VIEWS } from './ViewCount.js'
+
 export function buildColumnMap(width, viewCount, lens, startX = 0) {
-  if (viewCount !== 2 && viewCount !== 3) throw new RangeError('Two or three views are required.')
+  if (!isSupportedViewCount(viewCount)) throw new RangeError(`Between ${MIN_VIEWS} and ${MAX_VIEWS} views are required.`)
   const map = new Uint8Array(width)
 
   for (let x = 0; x < width; x += 1) {

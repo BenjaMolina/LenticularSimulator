@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { MIN_PREVIEW_ANGLE, MAX_PREVIEW_ANGLE } from '../engine/AngularResponse.js'
-import { findPitchCandidates, PITCH_SEARCH_LIMITS } from '../engine/PitchOptimizer.js'
+import { defaultTargetAngles, findPitchCandidates, PITCH_SEARCH_LIMITS } from '../engine/PitchOptimizer.js'
 
 const percent = (share) => `${(share * 100).toFixed(1)}%`
 const number = (value) => value.trim() ? Number(value) : NaN
 
 export default function PitchSearch({ rasterWidth, settings, viewCount, project, onSelect }) {
-  const [angles, setAngles] = useState(() => viewCount === 2 ? ['12', '-12'] : ['12', '0', '-12'])
+  const [angles, setAngles] = useState(() => defaultTargetAngles(viewCount).map(String))
   const [lpiRadius, setLpiRadius] = useState('0.25')
   const [offsetRadius, setOffsetRadius] = useState('2')
   const [run, setRun] = useState(null)
