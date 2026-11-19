@@ -10,7 +10,7 @@ The print raster is the source of truth. The browser produces that raster once, 
 | Interlacing worker | Normalize originals to a centered A4 crop and fill the raster in row bands. The existing geometry uses absolute pixel centers, effective LPI, and signed print offset. |
 | `engine/RefractionModel.js` and `engine/OpticalSimulation.js` | Trace rays in the horizontal plane, sample actual print pixels, and composite in linear light. These modules have no browser or React dependencies. |
 | `rendering/CanvasRenderer.js` | Read raster rows and paint preview pixels. It does not own lens math. |
-| PNG export | Encode the finished raster, then set the PNG physical-density chunk without changing its dimensions or pixels. |
+| Print export | Encode the finished raster as PNG with its physical-density chunk, or use `rendering/ImageExporter.js` to write uncompressed RGBA TIFF strips with exact X/Y PPI. The separate versioned job report records the raster, stripe order and uncalibrated status. |
 
 `engine/ViewCount.js` sets the 2–10 integer view limit shared by upload validation, the column map, and the theoretical search. The pixel-center stripe rule is unchanged; raising the count narrows each stripe and therefore raises the minimum usable raster PPI.
 

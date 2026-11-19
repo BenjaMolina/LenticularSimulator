@@ -17,7 +17,7 @@ Open the localhost URL printed by Vite. Use a current desktop browser with Canva
 2. Enter the calibrated **Effective LPI** and a signed horizontal offset in raster pixels. Defaults: 50 nominal and effective LPI, 600 PPI, zero offset.
 3. Select **Generate interlace**. Use **Stripe detail** to view a magnified crop of the actual raster without the overview's downsampling. Changing inputs invalidates the preceding result.
 4. Open **Angular preview** and move the angle slider. **Cylindrical lens** is an uncalibrated ray model; **Planar reference** preserves the earlier approximation. The response chart shows which views the model samples at each angle, not measured ghosting.
-5. Select **Download print PNG** to save the interlaced raster at its original dimensions and selected PPI. Print at actual size; do not let the driver fit it to the page.
+5. Select **Download print PNG** or **Download print TIFF** to save the raster at its original dimensions and selected PPI. TIFF is uncompressed 8-bit RGBA; PNG is usually smaller. Print at actual size; do not let the driver fit it to the page. **Download job report JSON** saves the raster settings and source filenames in stripe order, without embedding images.
 
 To experiment before printing, open **Compare print settings A/B** under the response chart. A is the generated print; B changes only the effective print LPI and horizontal offset in the theoretical comparison. Move the same angle slider to compare the two. B does not change the exported PNG.
 

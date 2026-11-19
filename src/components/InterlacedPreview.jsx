@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import OpticalPreview from './OpticalPreview.jsx'
 import PrintPngDownload from './PrintPngDownload.jsx'
+import ProductionExports from './ProductionExports.jsx'
 import { MIN_VIEWS, MAX_VIEWS } from '../engine/ViewCount.js'
 
 const DETAIL_WIDTH = 144
@@ -92,6 +93,7 @@ function PreviewCanvas({ job }) {
           <OpticalPreview active={mode === 'angle'} raster={raster} settings={job.settings} size={job.size}
             viewCount={job.files.length} />
           <PrintPngDownload raster={raster} ppi={job.settings.ppi} />
+          <ProductionExports raster={raster} job={job} />
         </>
       )}
     </>
