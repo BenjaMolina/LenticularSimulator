@@ -14,7 +14,7 @@
 body { margin: 0; min-width: 280px; }
 [hidden] { display: none !important; }
 h1, h2, p { margin: 0; }
-button, input { font: inherit; }
+button, input, select { font: inherit; }
 button, .file-button {
   border: 1px solid var(--line);
   border-radius: 7px;
@@ -25,7 +25,7 @@ button, .file-button {
 }
 button:hover:not(:disabled), .file-button:hover:not(:has(input:disabled)) { border-color: var(--accent); }
 button:disabled, .file-button:has(input:disabled) { opacity: .55; cursor: not-allowed; }
-button:focus-visible, input:focus-visible, .file-button:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
+button:focus-visible, input:focus-visible, select:focus-visible, .file-button:focus-within { outline: 2px solid var(--accent); outline-offset: 3px; }
 
 .workbench { max-width: 1280px; margin: auto; padding: clamp(1rem, 4vw, 3.5rem); }
 .hero { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding-bottom: 1.8rem; }
@@ -71,7 +71,7 @@ h2 { font-size: 1.28rem; letter-spacing: -.02em; margin-top: .22rem; }
 
 .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; margin-bottom: .65rem; }
 .fields label { display: grid; gap: .3rem; font-size: .85rem; color: var(--muted); }
-.fields input { width: 100%; min-width: 0; color: #eef5f2; background: #111a1b; border: 1px solid var(--line); border-radius: 6px; padding: .55rem; }
+.fields :is(input, select) { width: 100%; min-width: 0; color: #eef5f2; background: #111a1b; border: 1px solid var(--line); border-radius: 6px; padding: .55rem; }
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: .65rem; margin: .8rem 0 0; padding-top: .8rem; border-top: 1px solid var(--line); font-size: .72rem; }
 .metrics dt { color: var(--muted); }
 .metrics dd { margin: .2rem 0 0; color: var(--accent); }

@@ -1,48 +1,48 @@
 import { useEffect, useRef, useState } from 'react'
-import { projectAngularColumns, renderAngularFrame } from '../engine/OpticalSimulation.js'
+import { projectAngularColumns, projectCylindricalColumns, renderAngularFrame } from '../engine/OpticalSimulation.js'
+import { cylindricalProfileError } from '../engine/RefractionModel.js'
+import { drawRgba, sampleRasterRows } from '../rendering/CanvasRenderer.js'
 
 const PREVIEW_WIDTH = 360
 
-function sampleRows(raster, height) {
-  const strip = document.createElement('canvas')
-  strip.width = raster.width
-  strip.height = height
-  const context = strip.getContext('2d')
-  if (!context) throw new Error('Canvas 2D is unavailable for the angular preview.')
-  context.imageSmoothingEnabled = false
-  context.drawImage(raster, 0, 0, strip.width, strip.height)
-  return context.getImageData(0, 0, strip.width, strip.height).data
-}
-
 export default function OpticalPreview({ active, raster, settings, size }) {
   const [angleDeg, setAngle] = useState(0)
-  const [depth, setDepth] = useState('0.50')
+  const [model, setModel] = useState('cylindrical')
+  const [curvedDepth, setCurvedDepth] = useState('1.20')
+  const [flatDepth, setFlatDepth] = useState('0.50')
+  const [radius, setRadius] = useState('0.40')
+  const [sheet, setSheet] = useState('')
   const [index, setIndex] = useState('1.50')
   const [error, setError] = useState('')
   const output = useRef(null)
   const source = useRef(null)
   const previewWidth = Math.min(PREVIEW_WIDTH, size.width)
   const previewHeight = Math.round(previewWidth * size.height / size.width)
-  const depthMm = Number(depth)
+  const curved = model === 'cylindrical'
+  const depthMm = Number(curved ? curvedDepth : flatDepth)
   const refractiveIndex = Number(index)
-  const valid = depthMm >= 0.01 && depthMm <= 5 && refractiveIndex >= 1 && refractiveIndex <= 3
+  const radiusMm = Number(radius)
+  const sheetLpi = sheet.trim() ? Number(sheet) : settings.effectiveLpi
+  const issue = curved ? cylindricalProfileError({ depthMm, refractiveIndex, radiusMm, sheetLpi }) :
+    (depthMm >= 0.01 && depthMm <= 5 && refractiveIndex >= 1 && refractiveIndex <= 3
+      ? null : 'Use a depth of 0.01–5 mm and an index of 1–3.')
 
   useEffect(() => {
-    if (!active || !valid) return
+    if (!active || issue) return
     try {
-      source.current ??= sampleRows(raster.current, previewHeight)
-      const columns = projectAngularColumns({
-        rasterWidth: size.width, previewWidth, settings, angleDeg, depthMm, refractiveIndex,
-      })
+      source.current ??= sampleRasterRows(raster.current, previewHeight)
+      const projection = { rasterWidth: size.width, previewWidth, settings, angleDeg }
+      const columns = curved
+        ? projectCylindricalColumns({ ...projection, profile: { depthMm, refractiveIndex, radiusMm, sheetLpi } })
+        : projectAngularColumns({ ...projection, depthMm, refractiveIndex })
       const pixels = renderAngularFrame(source.current, size.width, columns)
-      const context = output.current.getContext('2d')
-      if (!context || context.isContextLost?.()) throw new Error('Canvas 2D is unavailable for the angular preview.')
-      context.putImageData(new ImageData(pixels, previewWidth, previewHeight), 0, 0)
+      drawRgba(output.current, pixels)
       setError('')
     } catch (cause) {
       setError(cause.message)
     }
-  }, [active, valid, raster, settings, size.width, previewWidth, previewHeight, angleDeg, depthMm, refractiveIndex])
+  }, [active, issue, raster, settings, size.width, previewWidth, previewHeight, angleDeg, curved, depthMm,
+    refractiveIndex, radiusMm, sheetLpi])
 
   return (
     <section className="angular-preview" aria-label="Angular preview" hidden={!active}>
@@ -53,16 +53,34 @@ export default function OpticalPreview({ active, raster, settings, size }) {
           aria-valuetext={`${angleDeg} degrees`} onChange={(event) => setAngle(Number(event.target.value))} />
       </label>
       <div className="fields">
+        <label>Optical model
+          <select value={model} onChange={(event) => setModel(event.target.value)}>
+            <option value="cylindrical">Cylindrical lens</option>
+            <option value="planar">Planar reference</option>
+          </select>
+        </label>
         <label>Print plane depth (mm)
-          <input type="number" min="0.01" max="5" step="any" value={depth} onChange={(event) => setDepth(event.target.value)} />
+          <input type="number" min="0" max="5" step="any" value={curved ? curvedDepth : flatDepth}
+            onChange={(event) => (curved ? setCurvedDepth : setFlatDepth)(event.target.value)} />
         </label>
         <label>Refractive index
           <input type="number" min="1" max="3" step="any" value={index} onChange={(event) => setIndex(event.target.value)} />
         </label>
+        {curved && (
+          <>
+            <label>Curvature radius (mm)
+              <input type="number" min="0" step="any" value={radius} onChange={(event) => setRadius(event.target.value)} />
+            </label>
+            <label>Sheet LPI (optional)
+              <input type="number" min="1" max="300" step="any" value={sheet} placeholder={String(settings.effectiveLpi)}
+                onChange={(event) => setSheet(event.target.value)} />
+            </label>
+          </>
+        )}
       </div>
-      {!valid && <p className="error" role="status">Use a depth of 0.01–5 mm and an index of 1–3.</p>}
-      {valid && error && <p className="error" role="alert">{error}</p>}
-      <div className="canvas-stage" hidden={!valid || !!error}>
+      {curved && <p className="muted">Blank sheet LPI uses the printed effective LPI. A different sheet LPI changes only this preview.</p>}
+      {(issue || error) && <p className="error" role={issue ? 'status' : 'alert'}>{issue || error}</p>}
+      <div className="canvas-stage" hidden={!!(issue || error)}>
         <canvas ref={output} width={previewWidth} height={previewHeight} aria-label="Uncalibrated angular raster" />
       </div>
     </section>

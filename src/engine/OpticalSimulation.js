@@ -1,4 +1,5 @@
-import { createLensModel } from './LensModel.js'
+import { createLensModel, lpiToMillimeters } from './LensModel.js'
+import { cylindricalProfileError, traceCylindricalRay } from './RefractionModel.js'
 
 export function traceDisplacementMm(angleDeg, { depthMm, refractiveIndex }) {
   if (!Number.isFinite(angleDeg) || Math.abs(angleDeg) >= 90 ||
@@ -42,6 +43,42 @@ const TO_LINEAR = Float64Array.from({ length: 256 }, (_, byte) => {
   const value = byte / 255
   return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
 })
+
+export function projectCylindricalColumns({ rasterWidth, previewWidth, settings, angleDeg, profile }) {
+  const error = cylindricalProfileError(profile)
+  if (error) throw new RangeError(error)
+  if (!Number.isFinite(angleDeg) || Math.abs(angleDeg) >= 90) throw new RangeError('Invalid viewing angle.')
+
+  const pitchMm = lpiToMillimeters(profile.sheetLpi)
+  const pitchPx = settings.ppi / profile.sheetLpi
+  const pixelsPerMm = pitchPx / pitchMm
+  const apertureSamples = 17
+  const rays = Array.from({ length: apertureSamples }, (_, i) =>
+    traceCylindricalRay(angleDeg, ((i + 0.5) / apertureSamples - 0.5) * pitchMm, profile)).filter(Boolean)
+  const fullWeight = rays.reduce((total, ray) => total + ray.weight, 0)
+  const cache = new Map()
+
+  return Array.from({ length: previewWidth }, (_, column) => {
+    const lens = Math.floor((column + 0.5) * rasterWidth / previewWidth / pitchPx)
+    if (cache.has(lens)) return cache.get(lens)
+    const left = lens * pitchPx
+    const right = (lens + 1) * pitchPx
+    const taps = new Map()
+    for (const { filmX, weight } of rays) {
+      const hit = (lens + 0.5) * pitchPx + filmX * pixelsPerMm
+      if (hit < left || hit >= right) continue
+      const x = Math.floor(hit - 0.5)
+      const fraction = hit - (x + 0.5)
+      for (const [sample, part] of [[x, 1 - fraction], [x + 1, fraction]]) {
+        if (!part || sample < 0 || sample >= rasterWidth || sample + 0.5 < left || sample + 0.5 >= right) continue
+        taps.set(sample, (taps.get(sample) ?? 0) + part * weight / fullWeight)
+      }
+    }
+    const samples = Array.from(taps, ([x, weight]) => ({ x, weight }))
+    cache.set(lens, samples)
+    return samples
+  })
+}
 
 function toSrgb(value) {
   return 255 * (value <= 0.0031308 ? 12.92 * value : 1.055 * value ** (1 / 2.4) - 0.055)
