@@ -1,6 +1,22 @@
 import { createLensModel, lpiToMillimeters } from './LensModel.js'
 import { cylindricalProfileError, traceCylindricalRay } from './RefractionModel.js'
 
+export const VIEWING_DISTANCE_MM = Object.freeze({ min: 100, max: 10000 })
+
+export function viewingDistanceError(distanceMm) {
+  if (distanceMm === undefined) return null
+  const { min, max } = VIEWING_DISTANCE_MM
+  return Number.isFinite(distanceMm) && distanceMm >= min && distanceMm <= max
+    ? null : `Viewing distance must be between ${min} and ${max} mm, or blank for parallel rays.`
+}
+
+function createObserver(angleDeg, distanceMm) {
+  const error = viewingDistanceError(distanceMm)
+  if (error) throw new RangeError(error)
+  if (distanceMm === undefined) return null
+  return { distanceMm, xMm: distanceMm * Math.tan(angleDeg * Math.PI / 180) }
+}
+
 export function traceDisplacementMm(angleDeg, { depthMm, refractiveIndex }) {
   if (!Number.isFinite(angleDeg) || Math.abs(angleDeg) >= 90 ||
     !Number.isFinite(depthMm) || depthMm <= 0 ||
@@ -11,9 +27,11 @@ export function traceDisplacementMm(angleDeg, { depthMm, refractiveIndex }) {
   return depthMm * Math.tan(angleInside)
 }
 
-export function projectAngularColumns({ rasterWidth, previewWidth, settings, angleDeg, depthMm, refractiveIndex }) {
+export function projectAngularColumns({ rasterWidth, previewWidth, settings, angleDeg, depthMm, refractiveIndex, viewingDistanceMm }) {
   const { pixelsPerLens, effectivePitchMm } = createLensModel(settings)
-  const shiftPx = traceDisplacementMm(angleDeg, { depthMm, refractiveIndex }) * pixelsPerLens / effectivePitchMm
+  const optics = { depthMm, refractiveIndex }
+  const parallelShiftPx = traceDisplacementMm(angleDeg, optics) * pixelsPerLens / effectivePitchMm
+  const observer = createObserver(angleDeg, viewingDistanceMm)
   const radius = Math.max(1, pixelsPerLens / 8)
   const cache = new Map()
 
@@ -22,7 +40,12 @@ export function projectAngularColumns({ rasterWidth, previewWidth, settings, ang
     if (cache.has(lens)) return cache.get(lens)
     const left = lens * pixelsPerLens
     const right = (lens + 1) * pixelsPerLens
-    const hit = (lens + 0.5) * pixelsPerLens - shiftPx
+    const centerPx = (lens + 0.5) * pixelsPerLens
+    const localAngle = observer && Math.atan2(
+      observer.xMm - (centerPx - rasterWidth / 2) * effectivePitchMm / pixelsPerLens, observer.distanceMm,
+    ) * 180 / Math.PI
+    const shiftPx = observer ? traceDisplacementMm(localAngle, optics) * pixelsPerLens / effectivePitchMm : parallelShiftPx
+    const hit = centerPx - shiftPx
     const taps = []
     let weightSum = 0
     for (let x = Math.ceil(hit - radius - 0.5); x <= Math.floor(hit + radius - 0.5); x += 1) {
@@ -44,7 +67,7 @@ const TO_LINEAR = Float64Array.from({ length: 256 }, (_, byte) => {
   return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
 })
 
-export function projectCylindricalColumns({ rasterWidth, previewWidth, settings, angleDeg, profile }) {
+export function projectCylindricalColumns({ rasterWidth, previewWidth, settings, angleDeg, profile, viewingDistanceMm }) {
   const error = cylindricalProfileError(profile)
   if (error) throw new RangeError(error)
   if (!Number.isFinite(angleDeg) || Math.abs(angleDeg) >= 90) throw new RangeError('Invalid viewing angle.')
@@ -52,10 +75,14 @@ export function projectCylindricalColumns({ rasterWidth, previewWidth, settings,
   const pitchMm = lpiToMillimeters(profile.sheetLpi)
   const pitchPx = settings.ppi / profile.sheetLpi
   const pixelsPerMm = pitchPx / pitchMm
+  const observer = createObserver(angleDeg, viewingDistanceMm)
   const apertureSamples = 17
-  const rays = Array.from({ length: apertureSamples }, (_, i) =>
-    traceCylindricalRay(angleDeg, ((i + 0.5) / apertureSamples - 0.5) * pitchMm, profile)).filter(Boolean)
-  const fullWeight = rays.reduce((total, ray) => total + ray.weight, 0)
+  const surfacePoints = Array.from({ length: apertureSamples }, (_, i) => ((i + 0.5) / apertureSamples - 0.5) * pitchMm)
+  function traceAperture(localObserver) {
+    const rays = surfacePoints.map((x) => traceCylindricalRay(angleDeg, x, profile, localObserver)).filter(Boolean)
+    return { rays, fullWeight: rays.reduce((total, ray) => total + ray.weight, 0) }
+  }
+  const parallel = observer ? null : traceAperture()
   const cache = new Map()
 
   return Array.from({ length: previewWidth }, (_, column) => {
@@ -63,9 +90,14 @@ export function projectCylindricalColumns({ rasterWidth, previewWidth, settings,
     if (cache.has(lens)) return cache.get(lens)
     const left = lens * pitchPx
     const right = (lens + 1) * pitchPx
+    const centerPx = (lens + 0.5) * pitchPx
+    const { rays, fullWeight } = parallel ?? traceAperture({
+      distanceMm: observer.distanceMm,
+      offsetMm: observer.xMm - (centerPx - rasterWidth / 2) / pixelsPerMm,
+    })
     const taps = new Map()
     for (const { filmX, weight } of rays) {
-      const hit = (lens + 0.5) * pitchPx + filmX * pixelsPerMm
+      const hit = centerPx + filmX * pixelsPerMm
       if (hit < left || hit >= right) continue
       const x = Math.floor(hit - 0.5)
       const fraction = hit - (x + 0.5)

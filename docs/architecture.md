@@ -18,7 +18,7 @@ Printer presets are independent local records (`lenticular.printer-profile/v1`),
 
 ## Cylindrical preview (uncalibrated)
 
-Trace 17 evenly spaced rays across the circular cross-section of a vertical lenticule. At surface point `x`, the sag is `z = R − sqrt(R² − x²)`, and the inward unit normal points toward the circle center. Backward rays come from air at the selected angle. For incident direction `I`, inward normal `N`, and `η = 1/n`, the transmitted direction is:
+Trace 17 evenly spaced rays across the circular cross-section of a vertical lenticule. At surface point `x`, the sag is `z = R − sqrt(R² − x²)`, and the inward unit normal points toward the circle center. For incident direction `I` from the observer toward the surface, inward normal `N`, and `η = 1/n`, the transmitted direction is:
 
 ```text
 c = dot(I, N)
@@ -28,7 +28,17 @@ film_x = x + (depth − z) × T_x / T_z
 
 Visible rays are weighted by projected surface area, `c / N_z`. The preview interpolates the raster at each hit and rejects samples outside the associated lens aperture or page. The independently configurable sheet LPI determines where the physical lenses sit; **Effective LPI** in the print settings still determines the raster's stripes and is not modified by this preview.
 
-Defaults of **0.40 mm radius, 1.20 mm optical depth, and 1.50 index are illustrative**. The depth is near the paraxial focus `nR / (n − 1)` for those inputs, not a measurement. The model assumes distant observation and a circular surface, and omits reflection, scattering, adhesive layers, dot gain, and finite viewing distance. Ray weights are not measured ghosting.
+Defaults of **0.40 mm radius, 1.20 mm optical depth, and 1.50 index are illustrative**. The depth is near the paraxial focus `nR / (n − 1)` for those inputs, not a measurement. The model assumes a circular surface and a point observer in the horizontal plane, and omits reflection, scattering, adhesive layers, and dot gain. Ray weights are not measured ghosting.
+
+### Observer position
+
+The angle `θ` is measured at the horizontal center of the sheet, relative to its normal. A blank distance preserves the parallel direction `I = (−sin(θ), cos(θ))`. For a finite perpendicular distance `D` (100–10,000 mm), the observer is at `(D × tan(θ), −D)`. With lens center `X_c` relative to the raster midpoint in millimeters, cylindrical tracing uses:
+
+```text
+I = normalize(X_c + x − D × tan(θ), D + z)
+```
+
+At 0°, only the center is viewed straight on; outer lenses see directions of opposite sign. Planar refraction uses the angle from the lens center on the flat surface instead. The distance is shared across the angular preview and both A/B comparisons. It is not a sheet property and does not change saved profiles or the print raster.
 
 ## Planar MVP reference
 

@@ -113,6 +113,9 @@ progress { width: min(200px, 80%); accent-color: var(--accent); }
 .angle-control span { display: flex; justify-content: space-between; }
 .angle-control output { color: var(--accent); }
 .angle-control input { width: 100%; margin: 0; accent-color: var(--accent); }
+.viewing-controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(9rem, 35%); gap: .35rem .75rem; align-items: end; }
+.viewing-controls .fields { grid-template-columns: 1fr; margin: 0; }
+.viewing-controls p { grid-column: 1 / -1; }
 .angular-diagnostics { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; }
 .angular-diagnostics h3 { margin: 0 0 .3rem; font-size: 1rem; }
 .angular-chart { display: block; width: 100%; max-height: 175px; }
@@ -157,6 +160,7 @@ footer { color: var(--muted); font-size: .78rem; margin-top: 1rem; }
 }
 
 @media (max-width: 480px) {
+  .viewing-controls { grid-template-columns: minmax(0, 1fr); }
   .workspace-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .workspace-tabs button { padding-inline: .35rem; }
   .sheet-card .muted { font-size: .78rem; }

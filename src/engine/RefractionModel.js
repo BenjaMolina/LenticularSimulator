@@ -16,12 +16,22 @@ export function cylindricalProfileError({ sheetLpi, radiusMm, depthMm, refractiv
 }
 
 // Trace backward from the observer. The apex is at z=0; the print plane is at z=depthMm.
-export function traceCylindricalRay(angleDeg, surfaceX, { radiusMm, depthMm, refractiveIndex }) {
-  const radians = angleDeg * Math.PI / 180
-  const ix = -Math.sin(radians)
-  const iz = Math.cos(radians)
+export function traceCylindricalRay(angleDeg, surfaceX, { radiusMm, depthMm, refractiveIndex }, observer) {
   const nx = -surfaceX / radiusMm
   const nz = Math.sqrt(1 - nx ** 2)
+  const surfaceZ = surfaceX ** 2 / (radiusMm * (1 + nz))
+  let ix, iz
+  if (observer) {
+    const dx = surfaceX - observer.offsetMm
+    const dz = observer.distanceMm + surfaceZ
+    const length = Math.sqrt(dx ** 2 + dz ** 2)
+    ix = dx / length
+    iz = dz / length
+  } else {
+    const radians = angleDeg * Math.PI / 180
+    ix = -Math.sin(radians)
+    iz = Math.cos(radians)
+  }
   const incidence = ix * nx + iz * nz
   if (!(incidence > 0)) return null
 
@@ -31,7 +41,6 @@ export function traceCylindricalRay(angleDeg, surfaceX, { radiusMm, depthMm, ref
   const tz = eta * iz + normalFactor * nz
   if (!(tz > 0)) return null
 
-  const surfaceZ = surfaceX ** 2 / (radiusMm * (1 + nz))
   return {
     filmX: surfaceX + (depthMm - surfaceZ) * tx / tz,
     weight: incidence / nz,

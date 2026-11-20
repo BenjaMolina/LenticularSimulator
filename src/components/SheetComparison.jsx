@@ -27,7 +27,7 @@ function ProfileCard({ side, entries, choice, onChange, profile, canvas, width, 
   )
 }
 
-export default function SheetComparison({ active, raster, settings, size, viewCount, angleDeg }) {
+export default function SheetComparison({ active, raster, settings, size, viewCount, angleDeg, viewingDistanceMm }) {
   const [entries, setEntries] = useState([])
   const [choices, setChoices] = useState({ a: '', b: '' })
   const [storageError, setStorageError] = useState('')
@@ -60,10 +60,10 @@ export default function SheetComparison({ active, raster, settings, size, viewCo
   const result = useMemo(() => {
     if (!active || !canCompare || !profileA || !profileB) return null
     return compareSheetProfiles({
-      rasterWidth: size.width, previewWidth: width, settings, viewCount, angleDeg,
+      rasterWidth: size.width, previewWidth: width, settings, viewCount, angleDeg, viewingDistanceMm,
       opticsA: profileA.optics, opticsB: profileB.optics,
     })
-  }, [active, angleDeg, canCompare, profileA, profileB, settings, size.width, viewCount, width])
+  }, [active, angleDeg, canCompare, profileA, profileB, settings, size.width, viewCount, viewingDistanceMm, width])
 
   useEffect(() => {
     if (!result) return
@@ -80,7 +80,7 @@ export default function SheetComparison({ active, raster, settings, size, viewCo
   return (
     <section className="print-comparison sheet-comparison" aria-labelledby="sheet-comparison-heading">
       <h3 id="sheet-comparison-heading">Compare sheet profiles A/B</h3>
-      <p className="muted">Same print and angle; different cylindrical sheet profiles. Both previews are uncalibrated.</p>
+      <p className="muted">Same print and observer position; different cylindrical sheet profiles. Both previews are uncalibrated.</p>
       {storageError ? <p role="status" className="error">{storageError}</p> :
         !canCompare && <p className="muted">Save or import two profiles under Angular preview → Sheet profiles to compare them here.</p>}
       {canCompare && (

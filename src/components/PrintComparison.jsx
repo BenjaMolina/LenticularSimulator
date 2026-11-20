@@ -30,7 +30,7 @@ export default function PrintComparison({ active, rasterWidth, settings, viewCou
       <h3 id="print-comparison-heading">Compare print settings A/B</h3>
       <p className="muted">
         A is the generated print ({settings.effectiveLpi} effective LPI, offset {settings.offsetPx} px).
-        Both use the same sheet, optical model, and viewing angle. B is a virtual comparison only.
+        Both use the same sheet, optical model, and observer position. B is a virtual comparison only.
       </p>
       <div className="fields">
         <label>B effective LPI
